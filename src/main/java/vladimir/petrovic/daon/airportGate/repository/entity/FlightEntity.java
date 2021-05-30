@@ -1,19 +1,17 @@
 package vladimir.petrovic.daon.airportGate.repository.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "FLIGHT")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "FLIGHT")
 public class FlightEntity {
 
     public FlightEntity(String flightNumber) {

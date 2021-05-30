@@ -2,7 +2,6 @@ package vladimir.petrovic.daon.airportGate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import vladimir.petrovic.daon.airportGate.service.AirportGateService;
 import vladimir.petrovic.daon.airportGate.service.model.request.UpdateGateRequest;
@@ -31,7 +30,7 @@ public class AirportGateController {
         return airportGateService.freeGate(gateCode);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ValidationResponse updateGateAvailabilityTime(@RequestBody UpdateGateRequest request) {
         log.info("Updating gate lock time {}.", request);
         return airportGateService.updateGateAvailabilityTime(request);
