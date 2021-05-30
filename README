@@ -1,0 +1,48 @@
+Hey DAON,
+
+ - Project is built with AdoptOpenJDK 1.8.0_265;
+
+ - To start project project first run -> mvn clean install
+   - Or if you want to skip unit tests -> mvn clean install -DskipTests
+
+ - Create a run configuration as run project:
+   - option 1, navigate to AirportGateApplication and just click run
+   - option 2, create SpringBoot run configuration, set AirportGateApplication as main class and root directory as working directory
+   - make sure java 1.8 is set as JRE
+
+ - To test application:
+    1. To assign flight to gate, call POST: http://localhost:8080/gate/assign/{flightNumber}
+        - You will get response with data about assigned gate
+        - In case of invalid data:
+            - no gates are available /
+            - flight already assigned to gate /
+            - request flight number is blank
+          You will get an error response with description what data was invalid
+
+    2. To free up a gate, call PATCH: http://localhost:8080/gate/free/{gateCode}
+        - You will receive response with data describing if gate with code was successfully freed
+        - In case no gate were found, or gateCode in request was blank,
+          you will receive error response with description what data was invalid
+
+    3. To update gate availability time, call PATCH: http://localhost:8080/gate/update
+        - Request body example:
+            {
+                "gateCode"      : "A2",
+                "availableFrom" : "2021-05-29T18:00:00",
+                "availableTo"   : "2021-08-10T23:59:59"
+            }
+        - You will receive response with data describing if gate with code was successfully updated
+        - In case of invalid data:
+            - no gate was found for gateCode /
+            - no availableFrom data was set /
+            - no availableTo data was set /
+            - availableFrom is greater then availableTo /
+            - request body was null
+              You will get an error response with description what data was invalid
+
+    4. Additionally, I added an endpoint to get all gates at GET: http://localhost:8080/gate/findAll
+        - You will receive response of all gates
+        - In case of no gates persisted you will get an error response
+
+    - There is an postman collection attached for easier testing at root_directory/src/main/postmanCollections
+    - DB is prefilled with data from data.sql file

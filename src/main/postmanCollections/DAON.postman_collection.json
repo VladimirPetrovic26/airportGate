@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "41f78b30-0320-41db-931d-9f993df449f2",
+		"name": "DAON",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Assign gate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/gate/assign/11BB",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gate",
+						"assign",
+						"11BB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Free Gate",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/gate/free/A2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gate",
+						"free",
+						"A2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update gate lock times",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gateCode\"   : \"A2\",\n    \"availableFrom\" : \"2021-05-29T18:00:00\",\n    \"availableTo\"   : \"2021-08-10T23:59:59\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/gate/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gate",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find all gates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/gate/findAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gate",
+						"findAll"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
