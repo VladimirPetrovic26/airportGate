@@ -1,0 +1,26 @@
+DROP TABLE IF EXISTS AIRPORT_GATE;
+
+CREATE TABLE AIRPORT_GATE (
+  id VARCHAR(255) PRIMARY KEY,
+  gate_code VARCHAR(255) UNIQUE,
+  flight_id VARCHAR(255),
+  available_from DATETIME,
+  available_to DATETIME
+);
+
+CREATE TABLE FLIGHT (
+  id VARCHAR(255) PRIMARY KEY,
+  flight_number VARCHAR(255) UNIQUE
+);
+
+ALTER TABLE AIRPORT_GATE
+ADD CONSTRAINT fk_flight_id FOREIGN KEY(flight_id)
+    REFERENCES FLIGHT(id);
+
+INSERT INTO AIRPORT_GATE (id, gate_code, available_from, available_to) VALUES
+    ('2222-A2-GATE-AAAA','A2','2021-06-10T18:00:00','2021-06-15T23:59:59'),
+    ('5555-A5-GATE-AAAA','A5','2021-05-10T10:00:00','2021-07-10T13:00:00'),
+    ('1111-B1-GATE-BBBB','B1',null,null),
+    ('4444-B4-GATE-BBBB','B4',null,null),
+    ('3333-C3-GATE-CCCC','C3',null,null),
+    ('8888-C8-GATE-CCCC','C8',null,null);
