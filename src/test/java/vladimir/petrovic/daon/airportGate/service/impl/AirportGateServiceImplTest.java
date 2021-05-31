@@ -3,6 +3,7 @@ package vladimir.petrovic.daon.airportGate.service.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import vladimir.petrovic.daon.airportGate.exception.AirportGateException;
 import vladimir.petrovic.daon.airportGate.repository.AirportGateRepository;
 import vladimir.petrovic.daon.airportGate.repository.FlightRepository;
 import vladimir.petrovic.daon.airportGate.repository.entity.AirportGateEntity;
@@ -13,14 +14,14 @@ import vladimir.petrovic.daon.airportGate.service.model.request.UpdateGateReques
 import vladimir.petrovic.daon.airportGate.service.model.response.AirportGateResponse;
 import vladimir.petrovic.daon.airportGate.service.model.response.ValidationResponse;
 import vladimir.petrovic.daon.airportGate.util.AirportGateTestConstants;
+import vladimir.petrovic.daon.airportGate.util.ErrorType;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AirportGateServiceImplTest {
@@ -40,11 +41,8 @@ class AirportGateServiceImplTest {
 
     @Test
     void assign_gate_flight_number_blank() {
-        when(mapper.mapErrorResponse(anyString(), anyString())).thenReturn(getErrorResponse());
-
-        AirportGateResponse response = airportGateService.assignGate(StringUtils.SPACE);
-
-        testErrorResponse(response);
+        AirportGateException exception = assertThrows(AirportGateException.class, () -> airportGateService.assignGate(StringUtils.SPACE));
+        assertEquals(exception.getErrorType(), ErrorType.FLIGHT_NUMBER_BLANK);
     }
 
     @Test
@@ -135,14 +133,10 @@ class AirportGateServiceImplTest {
         verify(mapper, times(1)).mapSuccessfulResponse(any());
     }
 
-    @Test
+    @Test()
     void free_gate_blank_gate_code() {
-        when(mapper.mapErrorResponse(anyString(), anyString())).thenReturn(getErrorResponse());
-
-        airportGateService.freeGate(StringUtils.SPACE);
-
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
+        AirportGateException exception = assertThrows(AirportGateException.class, () -> airportGateService.freeGate(StringUtils.SPACE));
+        assertEquals(exception.getErrorType(), ErrorType.GATE_CODE_BLANK);
     }
 
     @Test
@@ -183,82 +177,58 @@ class AirportGateServiceImplTest {
 
     @Test
     void update_gate_availability_time_null_request() {
-        when(mapper.mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString()))
-                .thenReturn(new ValidationResponse());
-        airportGateService.updateGateAvailabilityTime(null);
+        AirportGateException exception = assertThrows(AirportGateException.class,
+                () -> airportGateService.updateGateAvailabilityTime(null));
 
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
-
-        verify(mapper, times(0))
-                .mapValidationResponse(anyString(), anyBoolean());
+        assertEquals(exception.getErrorType(), ErrorType.UPDATE_REQUEST_NULL);
     }
 
     @Test
     void update_gate_availability_no_gate_code() {
-        when(mapper.mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString()))
-                .thenReturn(new ValidationResponse());
-        airportGateService.updateGateAvailabilityTime(new UpdateGateRequest());
+        AirportGateException exception = assertThrows(AirportGateException.class,
+                () -> airportGateService.updateGateAvailabilityTime(new UpdateGateRequest()));
 
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
-
-        verify(mapper, times(0))
-                .mapValidationResponse(anyString(), anyBoolean());
+        assertEquals(exception.getErrorType(), ErrorType.UPDATE_REQUEST_GATE_CODE);
     }
 
     @Test
     void update_gate_availability_no_available_from() {
-        when(mapper.mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString()))
-                .thenReturn(new ValidationResponse());
-        airportGateService.updateGateAvailabilityTime(
-                UpdateGateRequest
-                        .builder()
-                        .gateCode(AirportGateTestConstants.GATE_CODE)
-                        .build());
+        AirportGateException exception = assertThrows(AirportGateException.class,
+                () -> airportGateService.updateGateAvailabilityTime(
+                        UpdateGateRequest
+                                .builder()
+                                .gateCode(AirportGateTestConstants.GATE_CODE)
+                                .build()));
 
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
-
-        verify(mapper, times(0))
-                .mapValidationResponse(anyString(), anyBoolean());
+        assertEquals(exception.getErrorType(), ErrorType.UPDATE_REQUEST_AVAILABLE_FROM);
     }
 
     @Test
     void update_gate_availability_no_available_to() {
-        when(mapper.mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString()))
-                .thenReturn(new ValidationResponse());
-        airportGateService.updateGateAvailabilityTime(
-                UpdateGateRequest
-                        .builder()
-                        .gateCode(AirportGateTestConstants.GATE_CODE)
-                        .availableFrom(LocalDateTime.now())
-                        .build());
+        AirportGateException exception = assertThrows(AirportGateException.class,
+                () -> airportGateService.updateGateAvailabilityTime(
+                        UpdateGateRequest
+                                .builder()
+                                .gateCode(AirportGateTestConstants.GATE_CODE)
+                                .availableFrom(LocalDateTime.now())
+                                .build()));
 
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
-
-        verify(mapper, times(0))
-                .mapValidationResponse(anyString(), anyBoolean());
+        assertEquals(exception.getErrorType(), ErrorType.UPDATE_REQUEST_AVAILABLE_TO);
     }
 
     @Test
     void update_gate_availability_available_from_greater_than_available_to() {
-        when(mapper.mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString()))
-                .thenReturn(new ValidationResponse());
-        airportGateService.updateGateAvailabilityTime(
-                UpdateGateRequest
-                        .builder()
-                        .gateCode(AirportGateTestConstants.GATE_CODE)
-                        .availableFrom(LocalDateTime.of(2025, 6, 12, 12,0,0))
-                        .availableTo(LocalDateTime.of(2021, 6, 12, 12,0,0))
-                        .build());
 
-        verify(mapper, times(1))
-                .mapValidationErrorResponse(anyString(), anyBoolean(), anyString(), anyString());
+        AirportGateException exception = assertThrows(AirportGateException.class,
+                () -> airportGateService.updateGateAvailabilityTime(
+                        UpdateGateRequest
+                                .builder()
+                                .gateCode(AirportGateTestConstants.GATE_CODE)
+                                .availableFrom(LocalDateTime.of(2025, 6, 12, 12,0,0))
+                                .availableTo(LocalDateTime.of(2021, 6, 12, 12,0,0))
+                                .build()));
 
-        verify(mapper, times(0))
-                .mapValidationResponse(anyString(), anyBoolean());
+        assertEquals(exception.getErrorType(), ErrorType.AVAILABLE_FROM_GREATER_THAN_AVAILABLE_TO);
     }
 
     @Test
